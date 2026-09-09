@@ -53,7 +53,7 @@ proptest = { version = "1.11.0" }
 proptest-derive = "0.8.0"
 rand = { version = "0.9.2" }
 serde = { version = "1.0.227", features = ["derive", "rc"] }
-criterion = { version = "0.7.0", features = ["html_reports"] }
+criterion = { version = "5.0.1", features = ["html_reports"], package = "codspeed-criterion-compat" }
 ecow = { version = "0.3.1", features = ["serde"], default-features = false }
 indexmap = { version = "2.13.1", features = ["serde"], default-features = false }
 smallvec = { version = "1.15.1", features = ["const_generics", "serde"], default-features = false }

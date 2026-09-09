@@ -3,6 +3,10 @@ members = ["wincode", "wincode-derive"]
 exclude = ["fuzz"]
 resolver = "2"
 
+[workspace.lints.rust]
+# `codspeed` is set by `cargo codspeed` when building the benchmarks.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(codspeed)'] }
+
 [workspace.lints.clippy]
 default_trait_access = "deny"
 manual_let_else = "deny"
