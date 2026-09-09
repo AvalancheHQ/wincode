@@ -4,6 +4,7 @@ Fast, bincode‑compatible serializer/deserializer focused on in‑place initial
 
 [![Crates.io version](https://img.shields.io/crates/v/wincode.svg?style=flat-square)](https://crates.io/crates/wincode)
 [![docs.rs docs](https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square)](https://docs.rs/wincode)
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://app.codspeed.io/AvalancheHQ/wincode?utm_source=badge)
 
 ## Quickstart
 
@@ -30,6 +31,14 @@ Run benchmarks comparing `wincode` against `bincode`:
 
 ```bash
 cargo bench --features derive
+```
+
+The same suite runs on every pull request through [CodSpeed](https://app.codspeed.io/AvalancheHQ/wincode),
+which measures it with CPU simulation to keep the numbers comparable across CI machines:
+
+```bash
+cargo codspeed build -p wincode --features derive
+codspeed run --mode simulation -- cargo codspeed run
 ```
 
 ## Security

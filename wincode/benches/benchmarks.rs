@@ -28,10 +28,7 @@
 //! change did to the emitted instructions.
 
 use {
-    criterion::{
-        Bencher, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main,
-        measurement::WallTime,
-    },
+    criterion::{Bencher, BenchmarkId, Criterion, Throughput, criterion_group, criterion_main},
     rand::{Rng as _, SeedableRng},
     serde::{Deserialize, Serialize},
     std::{
@@ -43,6 +40,16 @@ use {
         serialized_size,
     },
 };
+
+/// The bencher handed to a benchmark body.
+///
+/// criterion parameterizes `Bencher` by its measurement, while the CodSpeed
+/// compatibility layer (used when the benches are built by `cargo codspeed`)
+/// exposes a single instrumented bencher without that parameter.
+#[cfg(codspeed)]
+type Bench<'a> = Bencher<'a>;
+#[cfg(not(codspeed))]
+type Bench<'a> = Bencher<'a, criterion::measurement::WallTime>;
 
 #[derive(Serialize, Deserialize, SchemaWrite, SchemaRead, Clone)]
 struct SimpleStruct {
@@ -93,7 +100,7 @@ where
 fn run_with_t<T, R>(
     new_data: impl Fn() -> T,
     body: impl Fn(&T) -> R,
-) -> impl FnMut(&mut Bencher<'_, WallTime>) {
+) -> impl FnMut(&mut Bench<'_>) {
     move |b| {
         let data = new_data();
         b.iter(|| body(black_box(&data)));
@@ -108,7 +115,7 @@ fn run_with_t<T, R>(
 fn run_with_buf<T, R>(
     new_data: impl Fn() -> T,
     body: impl Fn(&mut [u8], &T) -> R,
-) -> impl FnMut(&mut Bencher<'_, WallTime>)
+) -> impl FnMut(&mut Bench<'_>)
 where
     T: SchemaWrite<DefaultConfig, Src = T>,
 {
@@ -123,7 +130,7 @@ where
 fn run_with_bytes<T, R>(
     new_data: impl Fn() -> T,
     body: impl Fn(&[u8]) -> R,
-) -> impl FnMut(&mut Bencher<'_, WallTime>)
+) -> impl FnMut(&mut Bench<'_>)
 where
     T: SchemaWrite<DefaultConfig, Src = T> + Serialize,
 {
