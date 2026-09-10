@@ -11,8 +11,8 @@ use {
         context,
         error::{
             ReadResult, WriteError, WriteResult, invalid_bool_encoding, invalid_char_lead,
-            invalid_tag_encoding, invalid_utf8_encoding, invalid_value, pointer_sized_decode_error,
-            read_length_encoding_overflow, unaligned_pointer_read,
+            invalid_tag_encoding, invalid_utf8_code, invalid_utf8_encoding, invalid_value,
+            pointer_sized_decode_error, read_length_encoding_overflow, unaligned_pointer_read,
         },
         int_encoding::{ByteOrder, Endian, IntEncoding, PlatformEndian},
         io::{Reader, Writer},
@@ -417,7 +417,11 @@ unsafe impl<'de, C: ConfigCore> SchemaRead<'de, C> for char {
             _ => return Err(invalid_char_lead(b0)),
         };
 
-        let c = char::from_u32(code_point).ok_or(ReadError::InvalidUtf8Code(code_point))?;
+        // `ok_or` would build the error eagerly on every decoded char, and `ReadError`
+        // has drop glue, so the unused error would also have to be dropped per char.
+        let Some(c) = char::from_u32(code_point) else {
+            return Err(invalid_utf8_code(code_point));
+        };
         dst.write(c);
         Ok(())
     }

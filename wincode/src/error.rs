@@ -115,6 +115,11 @@ pub const fn invalid_utf8_encoding(error: Utf8Error) -> ReadError {
 }
 
 #[cold]
+pub const fn invalid_utf8_code(code_point: u32) -> ReadError {
+    ReadError::InvalidUtf8Code(code_point)
+}
+
+#[cold]
 pub const fn invalid_char_lead(val: u8) -> ReadError {
     ReadError::InvalidCharLead(val)
 }
